@@ -17,21 +17,36 @@
 namespace User\Model;
 
 
-class User 
+use Zend\InputFilter\InputFilter;
+use Zend\InputFilter\InputFilterAwareInterface;
+use Zend\InputFilter\InputFilterInterface;
+use Zend\Validator\InArray;
+
+class User implements InputFilterAwareInterface
 {
-    private $_id;
-    private $_email;
-    private $_password;
-    private $_role;
-    private $_date;
+    // for binding to work with the form this variables have the same name as the form fields
+    // not use here '_' to denote private property
+
+    private $id;
+    private $email;
+    private $password;
+    private $role;
+    private $date;
+
+    /**
+     * @var InputFilterInterface
+     *
+     * This variable is needed for the input filter
+     */
+    private $_inputFilter;
 
     function __construct($_id = null, $_email = null, $_password = null, $_role = null, $_date = null)
     {
-        $this->_id = $_id;
-        $this->_email = $_email;
-        $this->_password = $_password;
-        $this->_role = $_role;
-        $this->_date = $_date;
+        $this->id = $_id;
+        $this->email = $_email;
+        $this->password = $_password;
+        $this->role = $_role;
+        $this->date = $_date;
     }
 
     /**
@@ -43,90 +58,194 @@ class User
      */
     public function exchangeArray($data)
     {
-        $this->_id          = (!empty($data['id'])) ? $data['id'] : null;
-        $this->_email       = (!empty($data['email'])) ? $data['email'] : null;
-        $this->_password    = (!empty($data['password'])) ? $data['password'] : null;
-        $this->_role        = (!empty($data['role'])) ? $data['role'] : null;
-        $this->_date        = (!empty($data['date'])) ? $data['date'] : null;
+        $this->id          = (!empty($data['id'])) ? $data['id'] : null;
+        $this->email       = (!empty($data['email'])) ? $data['email'] : null;
+        $this->password    = (!empty($data['password'])) ? $data['password'] : null;
+        $this->role        = (!empty($data['role'])) ? $data['role'] : null;
+        $this->date        = (!empty($data['date'])) ? $data['date'] : null;
     }
 
     /**
-     * @return mixed
+     * getArrayCopy
+     *
+     * Needed for use in form binding
+     *
+     * @return array
+     */
+    public function getArrayCopy()
+    {
+        return get_object_vars($this);
+    }
+
+    /**
+     * @return null
      */
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
-     * @param mixed $id
+     * @param null $id
      */
     public function setId($id)
     {
-        $this->_id = $id;
+        $this->id = $id;
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getEmail()
     {
-        return $this->_email;
+        return $this->email;
     }
 
     /**
-     * @param mixed $email
+     * @param null $email
      */
     public function setEmail($email)
     {
-        $this->_email = $email;
+        $this->email = $email;
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getPassword()
     {
-        return $this->_password;
+        return $this->password;
     }
 
     /**
-     * @param mixed $password
+     * @param null $password
      */
     public function setPassword($password)
     {
-        $this->_password = $password;
+        $this->password = $password;
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getRole()
     {
-        return $this->_role;
+        return $this->role;
     }
 
     /**
-     * @param mixed $role
+     * @param null $role
      */
     public function setRole($role)
     {
-        $this->_role = $role;
+        $this->role = $role;
     }
 
     /**
-     * @return mixed
+     * @return null
      */
     public function getDate()
     {
-        return $this->_date;
+        return $this->date;
     }
 
     /**
-     * @param mixed $date
+     * @param null $date
      */
     public function setDate($date)
     {
-        $this->_date = $date;
+        $this->date = $date;
     }
+
+    /**
+     * Set input filter
+     *
+     * @param  InputFilterInterface $inputFilter
+     *
+     * @return InputFilterAwareInterface
+     */
+    public function setInputFilter(InputFilterInterface $inputFilter)
+    {
+        throw new \Exception('Not used');
+    }
+
+    /**
+     * Retrieve input filter
+     *
+     * @return InputFilterInterface
+     */
+    public function getInputFilter()
+    {
+        if (!$this->_inputFilter) {
+            $inputFilter = new InputFilter();
+
+            $inputFilter->add(array(
+                'name' => 'id',
+                'continue_if_empty' => true,
+            ));
+
+            $inputFilter->add(array(
+                'name' => 'email',
+                'required' => true,
+                'filters' => array(
+                    array('name' => 'StringTrim'), // clean blank spaces
+                    array('name' => 'StripTags'), // clean malicious code
+                    array('name' => 'StringToLower'),
+                ),
+                'validators' => array(
+                    array(
+                        'name' => 'EmailAddress',
+                        'options' => array(
+                            'messages' => array(
+                                'emailAddressInvalidFormat' => 'You entered an invalid email address',
+                            ),
+                        ),
+                    ),
+                    array(
+                        'name' => 'NotEmpty',
+                        'options' => array(
+                            'messages' => array(
+                                'isEmpty' => 'Email address is required',
+                            ),
+                        ),
+                    ),
+                ),
+            ));
+
+            $inputFilter->add(array(
+                'name' => 'password',
+                'required' => true,
+                'filters' => array(
+                    array('name' => 'Alnum'),
+                ),
+            ));
+
+            $inputFilter->add(array(
+                'name' => 'role',
+                'required' => true,
+                'filters' => array(
+                    array('name' => 'Alpha'), // only letters
+                ),
+                'validators' => array(
+                    array(
+                        'name'    => 'InArray',
+                        'options' => array(
+                            'haystack' => array('user', 'admin'),
+                            'strict'   => InArray::COMPARE_STRICT
+                        ),
+                    ),
+                ),
+            ));
+
+            $inputFilter->add(array(
+                'name' => 'date',
+                'continue_if_empty' => true,
+            ));
+
+            $this->_inputFilter = $inputFilter;
+        }
+
+        return $this->_inputFilter;
+    }
+
 }

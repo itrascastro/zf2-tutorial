@@ -2,8 +2,11 @@
 
 namespace User\Controller;
 
+use User\Form\User as UserForm;
 use User\Model\Interfaces\UserDaoInterface;
+use User\Model\User;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
 
 class AccountController extends AbstractActionController
 {
@@ -29,13 +32,47 @@ class AccountController extends AbstractActionController
     {
         $this->layout()->title = 'Create User';
 
-        return [];
+        $form = new UserForm();
+        $form->get('submit')->setValue('Create New User');
+        $form->setAttribute('action', $this->url()->fromRoute('account_doCreate'));
+
+        return ['form' => $form];
     }
 
     public function doCreateAction()
     {
-        $this->_model->save($this->params()->fromPost());
-        $this->redirect()->toRoute('account');
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $form = new UserForm();
+            $userEntity = new User();
+            $form->setInputFilter($userEntity->getInputFilter());
+            $form->setData($request->getPost());
+
+            if ($form->isValid()) {
+                $formData = $form->getData();
+
+                $data['email']      = $formData['email'];
+                $data['password']   = $formData['password'];
+                $data['role']       = $formData['role'];
+                $data['date']       = date('Y-m-d H:i:s');
+
+                $this->_model->save($data);
+                return $this->redirect()->toRoute('account');
+            }
+
+            $form->prepare();
+
+            $this->layout()->title = 'Create User - Error - Review your data';
+
+            // we reuse the create view
+            $view = new ViewModel(['form' => $form]);
+            $view->setTemplate('user/account/create.phtml');
+
+            return $view;
+        }
+
+        $this->redirect()->toRoute('account_create');
     }
 
     public function viewAction()
@@ -61,12 +98,51 @@ class AccountController extends AbstractActionController
 
         $user = $this->_model->getById($this->params()->fromRoute('id'));
 
-        return ['user' => $user];
+        $form = new UserForm();
+        $form->setAttribute('action', $this->url()->fromRoute('account_doUpdate'));
+        $form->bind($user);
+        $form->get('submit')->setAttribute('value', 'Edit User');
+
+        // we reuse the create view
+        $view = new ViewModel(['form' => $form, 'isUpdate' => true]);
+        $view->setTemplate('user/account/create.phtml');
+
+        return $view;
     }
 
     public function doUpdateAction()
     {
-        $this->_model->update($this->params()->fromPost());
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $form = new UserForm();
+            $userEntity = new User();
+            $form->setInputFilter($userEntity->getInputFilter());
+            $form->setData($request->getPost());
+
+            if ($form->isValid()) {
+                $formData = $form->getData();
+
+                $data['id']         = $formData['id'];
+                $data['email']      = $formData['email'];
+                $data['password']   = $formData['password'];
+                $data['role']       = $formData['role'];
+                $data['date']       = date('Y-m-d H:i:s');
+
+                $this->_model->update($data);
+                return $this->redirect()->toRoute('account');
+            }
+
+            $form->prepare();
+
+            $this->layout()->title = 'Update User - Error - Review your data';
+
+            // we reuse the create view
+            $view = new ViewModel(['form' => $form, 'isUpdate' => true]);
+            $view->setTemplate('user/account/create.phtml');
+
+            return $view;
+        }
 
         $this->redirect()->toRoute('account');
     }

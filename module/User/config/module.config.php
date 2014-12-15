@@ -95,7 +95,10 @@ return array(
             //'account' => 'User\Controller\AccountController',
         ),
         'factories' => array(
+            // testing the controller with the two Dao versions
+            // 1: No TableGateWay version
             //'account' => 'User\Controller\Factory\AccountControllerFactory',
+            // 2: TableGateWay version
             'account' => 'User\Controller\Factory\AccountTableGateWayControllerFactory',
         ),
     ),
@@ -106,7 +109,6 @@ return array(
         'not_found_template'        => 'error/404',
         'exception_template'        => 'error/index',
         'template_map'              => array(
-            'partial/form' => __DIR__ . '/../view/partial/form.phtml',
         ),
         'template_path_stack'       => array(
             __DIR__ . '/../view',

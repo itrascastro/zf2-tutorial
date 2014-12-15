@@ -46,7 +46,6 @@ class UserDaoTableGateWay implements UserDaoInterface
 
     public function save($data)
     {
-        $data['date'] = date('Y-m-d H:i:s');
         $this->_tableGateWay->insert($data);
     }
 
