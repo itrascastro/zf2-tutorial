@@ -18,6 +18,8 @@ namespace User\Model;
 
 use User\Model\Interfaces\UserDaoInterface;
 use Zend\Db\Adapter\Adapter;
+use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Paginator\Paginator;
 
 /**
  * Class UserDao
@@ -41,24 +43,30 @@ class UserDao implements UserDaoInterface
     }
 
     /**
-     * @return Adapter
+     * findAll
+     *
+     * If paginated return all the rows in an Array which is very inefficient
+     *
+     * @param bool $paginated
+     *
+     * @return \ArrayObject|Paginator
      */
-    public function getDb()
-    {
-        return $this->_db;
-    }
-
-    public function findAll()
+    public function findAll($paginated = false)
     {
         $resultSet = $this->_db->query('SELECT * FROM users', Adapter::QUERY_MODE_EXECUTE);
-        $users = new \ArrayObject();
+
+        $users = array();
         $count = $resultSet->count();
 
         for ($i = 0; $i < $count; $i++) {
             $row = $resultSet->current();
             $user = new User($row->id, $row->email, $row->password, $row->role, $row->date);
-            $users->append($user);
+            $users[] = $user;
             $resultSet->next();
+        }
+
+        if ($paginated) {
+            return new Paginator(new ArrayAdapter($users));
         }
 
         return $users;

@@ -20,8 +20,6 @@ use User\Form\User as UserForm;
 use User\Model\Interfaces\UserDaoInterface;
 use User\Model\User;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Paginator\Adapter\DbTableGateway;
-use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 class AccountController extends AbstractActionController
@@ -39,7 +37,7 @@ class AccountController extends AbstractActionController
     public function indexAction()
     {
         $this->layout()->title = 'List Users';
-        $paginator = $this->_model->findAll();
+        $paginator = $this->_model->findAll(true);
 
         $paginator->setCurrentPageNumber((int)$this->params()->fromRoute('page'));
         $paginator->setItemCountPerPage(2);

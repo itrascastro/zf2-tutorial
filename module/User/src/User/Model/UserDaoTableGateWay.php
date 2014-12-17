@@ -34,9 +34,16 @@ class UserDaoTableGateWay implements UserDaoInterface
         $this->_tableGateWay = $_tableGateway;
     }
 
-    public function findAll()
+    /**
+     * findAll
+     *
+     * You can pass $where and $order to DbTableGateway adapter after tableGateway parameter
+     *
+     * @return Paginator
+     */
+    public function findAll($paginated = false)
     {
-        return new Paginator(new DbTableGateway($this->_tableGateWay));
+        return ($paginated) ? new Paginator(new DbTableGateway($this->_tableGateWay)) : $this->_tableGateWay->select();
     }
 
     public function getById($id)
@@ -59,10 +66,5 @@ class UserDaoTableGateWay implements UserDaoInterface
     public function update($data)
     {
         $this->_tableGateWay->update($data, ['id' => $data['id']]);
-    }
-
-    public function getDb()
-    {
-        return $this->_tableGateWay;
     }
 }
