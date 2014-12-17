@@ -5,13 +5,29 @@ return array(
             'account' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route'    => '/account/[page/:page]',
+                    'route'    => '/account/',
                     'constraints' => array(
                         'page' => '[0-9]+',
                     ),
                     'defaults' => array(
                         'controller' => 'account',
                         'action'     => 'index',
+                    ),
+                ),
+                'may_terminate' => true, // no other segments will follow it
+                'child_routes' => array(
+                    'paginator' => array(
+                        'type' => 'Segment',
+                        'options' => array(
+                            'route' => 'page/[:page]/',
+                            'constraints' => array(
+                                'page' => '[0-9]+',
+                            ),
+                            'defaults' => array(
+                                'controller' => 'account',
+                                'action'     => 'index',
+                            ),
+                        ),
                     ),
                 ),
             ),
