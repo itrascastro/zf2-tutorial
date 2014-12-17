@@ -40,6 +40,14 @@ class UserDao implements UserDaoInterface
         $this->_db = $_db;
     }
 
+    /**
+     * @return Adapter
+     */
+    public function getDb()
+    {
+        return $this->_db;
+    }
+
     public function findAll()
     {
         $resultSet = $this->_db->query('SELECT * FROM users', Adapter::QUERY_MODE_EXECUTE);

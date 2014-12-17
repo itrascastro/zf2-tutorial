@@ -16,6 +16,12 @@ class IndexController extends AbstractActionController
 {
     public function indexAction()
     {
-        return array('mensaje' => 'Hola desde zf2');
+        $config = $this->serviceLocator->get('config');
+        return array('mensaje' => $config['application']['name']);
+    }
+
+    public function testPruebaAction()
+    {
+        return ['mesg' => 'hi'];
     }
 }

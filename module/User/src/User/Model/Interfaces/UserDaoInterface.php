@@ -19,6 +19,7 @@ namespace User\Model\Interfaces;
 
 interface UserDaoInterface
 {
+    public function getDb();
     public function findAll();
     public function getById($id);
     public function save($data);

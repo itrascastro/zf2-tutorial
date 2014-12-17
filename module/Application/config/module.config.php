@@ -8,9 +8,6 @@
  */
 
 return array(
-    'application' => array(
-        'name' => 'Curso zf2',
-    ),
     'router' => array(
         'routes' => array(
             'home' => array(

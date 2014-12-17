@@ -3,9 +3,12 @@ return array(
     'router' => array(
         'routes' => array(
             'account' => array(
-                'type' => 'Literal',
+                'type' => 'Segment',
                 'options' => array(
-                    'route'    => '/account/',
+                    'route'    => '/account/[page/:page]',
+                    'constraints' => array(
+                        'page' => '[0-9]+',
+                    ),
                     'defaults' => array(
                         'controller' => 'account',
                         'action'     => 'index',

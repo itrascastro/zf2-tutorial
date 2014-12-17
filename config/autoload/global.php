@@ -12,5 +12,7 @@
  */
 
 return array(
-    // ...
+    'application' => array(
+        'name' => 'Curso zf2',
+    ),
 );

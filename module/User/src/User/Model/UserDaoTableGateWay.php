@@ -19,6 +19,8 @@ namespace User\Model;
 
 use User\Model\Interfaces\UserDaoInterface;
 use Zend\Db\TableGateway\TableGateway;
+use Zend\Paginator\Adapter\DbTableGateway;
+use Zend\Paginator\Paginator;
 
 class UserDaoTableGateWay implements UserDaoInterface
 {
@@ -34,7 +36,7 @@ class UserDaoTableGateWay implements UserDaoInterface
 
     public function findAll()
     {
-        return $this->_tableGateWay->select();
+        return new Paginator(new DbTableGateway($this->_tableGateWay));
     }
 
     public function getById($id)
@@ -57,5 +59,10 @@ class UserDaoTableGateWay implements UserDaoInterface
     public function update($data)
     {
         $this->_tableGateWay->update($data, ['id' => $data['id']]);
+    }
+
+    public function getDb()
+    {
+        return $this->_tableGateWay;
     }
 }
