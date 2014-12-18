@@ -11,6 +11,10 @@ return array(
         'Calculator',
         'User',
         'EdpModuleLayouts',
+        'ZendDeveloperTools',
+        'DoctrineModule',
+        'DoctrineORMModule',
+        'Blog'
     ),
     'module_listener_options' => array(
         'module_paths' => array(
