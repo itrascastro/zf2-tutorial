@@ -9,7 +9,8 @@ return array(
     'modules' => array(
         'Application',
         'Calculator',
-        'User'
+        'User',
+        'EdpModuleLayouts',
     ),
     'module_listener_options' => array(
         'module_paths' => array(

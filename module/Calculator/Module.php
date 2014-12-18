@@ -16,14 +16,6 @@ class Module
 {
     public function onBootstrap(MvcEvent $e)
     {
-        $e->getApplication()->getEventManager()->getSharedManager()->attach('Zend\Mvc\Controller\AbstractController', 'dispatch', function($e) {
-                $controller = $e->getTarget();
-                $controllerClass = get_class($controller);
-                $moduleNamespace = substr($controllerClass, 0, strpos($controllerClass, '\\'));
-                if ($moduleNamespace != 'Application') $controller->layout('Calculator/layout');
-                else $controller->layout('Application/layout');
-            }, 100);
-
         $layout = $e->getViewModel();
         $config = $e->getApplication()->getServiceManager()->get('config');
         $layout->appName = $config['application']['name'];

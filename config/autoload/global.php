@@ -15,4 +15,9 @@ return array(
     'application' => array(
         'name' => 'Curso zf2',
     ),
+    'module_layouts' => array(
+        'Application'   => 'Application/layout',
+        'Calculator'    => 'Calculator/layout',
+        'User'          => 'Calculator/layout',
+    ),
 );
