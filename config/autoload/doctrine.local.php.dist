@@ -7,9 +7,9 @@ return array(
                 'params' => array(
                     'host'     => 'localhost',
                     'port'     => '3306',
-                    'user'     => 'mvc',
-                    'password' => '1234',
-                    'dbname'   => 'zf2',
+                    'user'     => '',
+                    'password' => '',
+                    'dbname'   => '',
                 )
             )
         ),
